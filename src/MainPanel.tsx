@@ -7,6 +7,9 @@ import { Camera3DPanel } from "./Camera_3DPanel";
 function MainPanel({ context }: { context: PanelExtensionContext }) {
   const [activeTab, setActiveTab] = useState("camera"); // "rack" or "camera"
 
+  // 🌐 Common ROS server link (EDIT HERE)
+  const ROS_SERVER_URL = "ws://192.168.0.162:9090";
+
   return (
     <div
       style={{
@@ -14,7 +17,6 @@ function MainPanel({ context }: { context: PanelExtensionContext }) {
         flexDirection: "column",
         height: "100%",
         backgroundColor: "#101010",
-    
         fontFamily: "sans-serif",
       }}
     >
@@ -62,9 +64,9 @@ function MainPanel({ context }: { context: PanelExtensionContext }) {
       {/* ---------- PANEL CONTENT ---------- */}
       <div style={{ flex: 1, overflow: "hidden" }}>
         {activeTab === "rack" ? (
-          <ExamplePanel context={context} />
+          <ExamplePanel context={context} rosUrl={ROS_SERVER_URL} />
         ) : (
-          <Camera3DPanel context={context} />
+          <Camera3DPanel context={context} rosUrl={ROS_SERVER_URL} />
         )}
       </div>
     </div>
