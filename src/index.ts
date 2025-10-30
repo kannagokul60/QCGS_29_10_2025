@@ -16,14 +16,14 @@ export function activate(extensionContext: ExtensionContext): void {
 
 // // extension.ts
 // import { ExtensionContext } from "@foxglove/extension";
-// import { initExamplePanel } from "./ExamplePanel";
+// import { initRackPanel } from "./RackPanel";
 // import { initCamera3DPanel } from "./Camera_3DPanel";
 
 // export function activate(extensionContext: ExtensionContext): void {
 //   // Register Example Panel
 //   extensionContext.registerPanel({
 //     name: "Example Panel",
-//     initPanel: initExamplePanel,
+//     initPanel: initRackPanel,
 //   });
 
 //   // Register Camera 3D Panel
@@ -36,9 +36,9 @@ export function activate(extensionContext: ExtensionContext): void {
 
 // import { ExtensionContext } from "@foxglove/extension";
 
-// import { initExamplePanel } from "./ExamplePanel";
+// import { initRackPanel } from "./RackPanel";
 
 // export function activate(extensionContext: ExtensionContext): void {
-// extensionContext.registerPanel({ name: "Extension Demo", initPanel: initExamplePanel });
+// extensionContext.registerPanel({ name: "Extension Demo", initPanel: initRackPanel });
 
 // }

@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { PanelExtensionContext } from "@foxglove/extension";
-import { ExamplePanel } from "./ExamplePanel";
+import { RackPanel } from "./RackPanel";
 import { Camera3DPanel } from "./Camera_3DPanel";
 
 function MainPanel({ context }: { context: PanelExtensionContext }) {
   const [activeTab, setActiveTab] = useState("camera"); // "rack" or "camera"
 
-  // 🌐 Common ROS server link (EDIT HERE)
+  // Common ROS server link (EDIT HERE)
   const ROS_SERVER_URL = "ws://192.168.0.162:9090";
 
   return (
@@ -64,7 +64,7 @@ function MainPanel({ context }: { context: PanelExtensionContext }) {
       {/* ---------- PANEL CONTENT ---------- */}
       <div style={{ flex: 1, overflow: "hidden" }}>
         {activeTab === "rack" ? (
-          <ExamplePanel context={context} rosUrl={ROS_SERVER_URL} />
+          <RackPanel context={context} rosUrl={ROS_SERVER_URL} />
         ) : (
           <Camera3DPanel context={context} rosUrl={ROS_SERVER_URL} />
         )}
