@@ -1,12 +1,16 @@
 import { useEffect, useState, useLayoutEffect } from "react";
 import { PanelExtensionContext } from "@foxglove/extension";
 import * as ROSLIB from "roslib";
-import { FaLock, FaUnlock, FaRocket, FaPlaneArrival } from "react-icons/fa";
+import { FaLock, FaUnlock } from "react-icons/fa";
 
 interface Camera3DPanelProps {
   context: PanelExtensionContext;
   rosUrl: string;
 }
+const takeOff =
+  "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIzLjM3NzYgMC42MTIxMzdDMjQuMjA3NSAxLjQ0MjM5IDI0LjIwNzUgMi43NzkyNCAyMy4zNzc2IDMuNTk1NDNMMTcuOTA1OSA5LjA2OTQ4TDIwLjg4NzkgMjIuMDAxOEwxOC45MDQ2IDI0TDEzLjQ0NyAxMy41NDQ0TDcuOTYxMzIgMTkuMDMyNUw4LjQ2NzY5IDIyLjUwODRMNi45NjI2NCAyNEw0LjQ4NzAzIDE5LjUyNTFMMCAxNy4wMzQzTDEuNDkwOTkgMTUuNTE0NUw1LjAwNzQ3IDE2LjAzNTJMMTAuNDUxIDEwLjU4OTNMMCA1LjA4NzA3TDEuOTk3MzYgMy4xMDI5TDE0LjkyNCA2LjA4NjE5TDIwLjM5NTYgMC42MTIxMzdDMjEuMTgzMyAtMC4yMDQwNDYgMjIuNTg5OSAtMC4yMDQwNDYgMjMuMzc3NiAwLjYxMjEzN1oiIGZpbGw9IiNFNkU2RTYiLz4KPC9zdmc+Cg==";
+
+const land = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIzLjM4NzkgMjMuMzc3NkMyMi41NTc2IDI0LjIwNzUgMjEuMjIwOCAyNC4yMDc1IDIwLjQwNDYgMjMuMzc3NkwxNC45MzA1IDE3LjkwNTlMMS45OTgyNCAyMC44ODc5TDYuMjAxOTFlLTA3IDE4LjkwNDZMMTAuNDU1NiAxMy40NDdMNC45Njc0NiA3Ljk2MTMyTDEuNDkxNjUgOC40Njc2OUw2LjIwMTkxZS0wNyA2Ljk2MjY0TDQuNDc0OTMgNC40ODcwM0w2Ljk2NTcgMEw4LjQ4NTQ5IDEuNDkwOTlMNy45NjQ4MiA1LjAwNzQ3TDEzLjQxMDcgMTAuNDUxTDE4LjkxMjkgMEwyMC44OTcxIDEuOTk3MzZMMTcuOTEzOCAxNC45MjRMMjMuMzg3OSAyMC4zOTU2QzI0LjIwNCAyMS4xODMzIDI0LjIwNCAyMi41ODk5IDIzLjM4NzkgMjMuMzc3NloiIGZpbGw9IiNFNkU2RTYiLz4KPC9zdmc+Cg==";
 
 type CameraKey = "front" | "back" | "left" | "right" | "down";
 
@@ -419,7 +423,7 @@ export function Camera3DPanel({ context, rosUrl }: Camera3DPanelProps) {
               onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
               onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
             >
-              <FaRocket size={24} />
+              <img src={takeOff} alt="Drone" style={{ width: "25px", height: "25px" }} />
             </button>
 
             {/* Land Button */}
@@ -441,7 +445,7 @@ export function Camera3DPanel({ context, rosUrl }: Camera3DPanelProps) {
               onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
               onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
             >
-              <FaPlaneArrival size={24} />
+              <img src={land} alt="Drone" style={{ width: "25px", height: "25px" }} />
             </button>
           </div>
         </div>

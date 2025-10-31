@@ -3,12 +3,31 @@ import { createRoot } from "react-dom/client";
 import { PanelExtensionContext } from "@foxglove/extension";
 import { RackPanel } from "./RackPanel";
 import { Camera3DPanel } from "./Camera_3DPanel";
+import { AisleWarehousePanel } from "./AisleWarehousePanel"; // ✅ New import
 
 function MainPanel({ context }: { context: PanelExtensionContext }) {
-  const [activeTab, setActiveTab] = useState("camera"); // "rack" or "camera"
+  const [activeTab, setActiveTab] = useState("camera"); // "camera" | "rack" | "aisle"
 
-  // Common ROS server link (EDIT HERE)
+  // Common ROS server link
   const ROS_SERVER_URL = "ws://192.168.0.162:9090";
+
+  const tabButton = (label: string, key: string) => (
+    <button
+      onClick={() => setActiveTab(key)}
+      style={{
+        backgroundColor: activeTab === key ? "#747474ff" : "#3f3f3fff",
+        border: "none",
+        color: "#fff",
+        padding: "0.5rem 1rem",
+        borderRadius: "6px",
+        cursor: "pointer",
+        marginRight: "0.5rem",
+        transition: "background 0.2s ease",
+      }}
+    >
+      {label}
+    </button>
+  );
 
   return (
     <div
@@ -31,43 +50,16 @@ function MainPanel({ context }: { context: PanelExtensionContext }) {
           borderBottom: "2px solid #333",
         }}
       >
-        <button
-          onClick={() => setActiveTab("camera")}
-          style={{
-            backgroundColor: activeTab === "camera" ? "#747474ff" : "#3f3f3fff",
-            border: "none",
-            color: "#fff",
-            padding: "0.5rem 1rem",
-            borderRadius: "6px",
-            cursor: "pointer",
-            marginRight: "0.5rem",
-          }}
-        >
-          Camera Feed
-        </button>
-
-        <button
-          onClick={() => setActiveTab("rack")}
-          style={{
-            backgroundColor: activeTab === "rack" ? "#747474ff" : "#3f3f3fff",
-            border: "none",
-            color: "#fff",
-            padding: "0.5rem 1rem",
-            borderRadius: "6px",
-            cursor: "pointer",
-          }}
-        >
-          Rack
-        </button>
+        {tabButton("Camera Feed", "camera")}
+        {tabButton("Rack", "rack")}
+        {tabButton("Aisle View", "aisle")}
       </div>
 
       {/* ---------- PANEL CONTENT ---------- */}
       <div style={{ flex: 1, overflow: "hidden" }}>
-        {activeTab === "rack" ? (
-          <RackPanel context={context} rosUrl={ROS_SERVER_URL} />
-        ) : (
-          <Camera3DPanel context={context} rosUrl={ROS_SERVER_URL} />
-        )}
+        {activeTab === "rack" && <RackPanel context={context} rosUrl={ROS_SERVER_URL} />}
+        {activeTab === "camera" && <Camera3DPanel context={context} rosUrl={ROS_SERVER_URL} />}
+        {activeTab === "aisle" && <AisleWarehousePanel context={context} rosUrl={ROS_SERVER_URL} />}
       </div>
     </div>
   );
