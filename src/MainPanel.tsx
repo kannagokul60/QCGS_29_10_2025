@@ -1,15 +1,51 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { PanelExtensionContext } from "@foxglove/extension";
 import { RackPanel } from "./RackPanel";
 import { Camera3DPanel } from "./Camera_3DPanel";
-import { AisleWarehousePanel } from "./AisleWarehousePanel"; // ✅ New import
+import { AisleWarehousePanel } from "./AisleWarehousePanel";
+import ROSLIB from "roslib";
+import { FaBatteryFull, FaBatteryHalf, FaBatteryQuarter, FaBatteryEmpty } from "react-icons/fa";
 
 function MainPanel({ context }: { context: PanelExtensionContext }) {
-  const [activeTab, setActiveTab] = useState("camera"); // "camera" | "rack" | "aisle"
+  const [activeTab, setActiveTab] = useState("camera");
+  const [battery, setBattery] = useState<number>(0);
+  const [connected, setConnected] = useState(false);
 
-  // Common ROS server link
   const ROS_SERVER_URL = "ws://192.168.0.162:9090";
+
+  useEffect(() => {
+    const ros = new ROSLIB.Ros({ url: ROS_SERVER_URL });
+
+    ros.on("connection", () => {
+      console.log("Connected to ROS");
+      setConnected(true);
+    });
+
+    ros.on("close", () => {
+      console.log("Disconnected from ROS");
+      setConnected(false);
+      setBattery(0);
+    });
+
+    //Subscribe to battery topic
+    const batteryListener = new ROSLIB.Topic({
+      ros,
+      name: "/mavros/battery", // change to your topic if needed
+      messageType: "sensor_msgs/BatteryState",
+    });
+
+    batteryListener.subscribe((msg) => {
+      if (msg.percentage !== undefined) {
+        setBattery(Math.round(msg.percentage * 100)); // convert 0–1 → %
+      }
+    });
+
+    return () => {
+      batteryListener.unsubscribe();
+      ros.close();
+    };
+  }, []);
 
   const tabButton = (label: string, key: string) => (
     <button
@@ -43,16 +79,70 @@ function MainPanel({ context }: { context: PanelExtensionContext }) {
       <div
         style={{
           display: "flex",
-          justifyContent: "flex-start",
+          justifyContent: "space-between",
           alignItems: "center",
           padding: "0.6rem 1rem",
           backgroundColor: "#181818",
           borderBottom: "2px solid #333",
         }}
       >
-        {tabButton("Camera Feed", "camera")}
-        {tabButton("Rack", "rack")}
-        {tabButton("Aisle View", "aisle")}
+        <div>
+          {tabButton("Camera Feed", "camera")}
+          {tabButton("Rack", "rack")}
+          {tabButton("Aisle View", "aisle")}
+        </div>
+
+        {/* Battery Status */}
+        <div
+          style={{
+            backgroundColor: "#2b2b2b",
+            borderRadius: "8px",
+            padding: "0.5rem 1rem",
+            display: "flex",
+            alignItems: "center",
+            border: "1px solid #444",
+            minWidth: "140px",
+            justifyContent: "center",
+            gap: "0.5rem",
+          }}
+        >
+          <span style={{ color: "#aaa", fontSize: "15px" }}>Battery:</span>
+
+          {/* Battery Icon + Percentage */}
+          {(() => {
+            let BatteryIcon = FaBatteryEmpty;
+            if (connected && battery > 75) BatteryIcon = FaBatteryFull;
+            else if (connected && battery > 40) BatteryIcon = FaBatteryHalf;
+            else if (connected && battery > 15) BatteryIcon = FaBatteryQuarter;
+            else BatteryIcon = FaBatteryEmpty;
+
+            const iconColor = connected ? (battery > 30 ? "#4caf50" : "#f8c756ff") : "#ff5252";
+
+            return (
+              <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                <BatteryIcon size={20} color={iconColor} />
+                <span
+                  style={{
+                    color: iconColor,
+                    fontWeight: 600,
+                    fontSize: "11px",
+                  }}
+                >
+                  {connected ? (
+                    `${battery}%`
+                  ) : (
+                    <span
+                      title="Drone is not connected"
+                      style={{ cursor: "pointer", fontSize: "15px" }}
+                    >
+                      !%
+                    </span>
+                  )}
+                </span>
+              </div>
+            );
+          })()}
+        </div>
       </div>
 
       {/* ---------- PANEL CONTENT ---------- */}

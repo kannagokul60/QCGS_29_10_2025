@@ -2,6 +2,7 @@ import { useEffect, useState, useLayoutEffect } from "react";
 import { PanelExtensionContext } from "@foxglove/extension";
 import * as ROSLIB from "roslib";
 import { FaLock, FaUnlock } from "react-icons/fa";
+import { FaExpand, FaCompress } from "react-icons/fa";
 
 interface Camera3DPanelProps {
   context: PanelExtensionContext;
@@ -10,7 +11,8 @@ interface Camera3DPanelProps {
 const takeOff =
   "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIzLjM3NzYgMC42MTIxMzdDMjQuMjA3NSAxLjQ0MjM5IDI0LjIwNzUgMi43NzkyNCAyMy4zNzc2IDMuNTk1NDNMMTcuOTA1OSA5LjA2OTQ4TDIwLjg4NzkgMjIuMDAxOEwxOC45MDQ2IDI0TDEzLjQ0NyAxMy41NDQ0TDcuOTYxMzIgMTkuMDMyNUw4LjQ2NzY5IDIyLjUwODRMNi45NjI2NCAyNEw0LjQ4NzAzIDE5LjUyNTFMMCAxNy4wMzQzTDEuNDkwOTkgMTUuNTE0NUw1LjAwNzQ3IDE2LjAzNTJMMTAuNDUxIDEwLjU4OTNMMCA1LjA4NzA3TDEuOTk3MzYgMy4xMDI5TDE0LjkyNCA2LjA4NjE5TDIwLjM5NTYgMC42MTIxMzdDMjEuMTgzMyAtMC4yMDQwNDYgMjIuNTg5OSAtMC4yMDQwNDYgMjMuMzc3NiAwLjYxMjEzN1oiIGZpbGw9IiNFNkU2RTYiLz4KPC9zdmc+Cg==";
 
-const land = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIzLjM4NzkgMjMuMzc3NkMyMi41NTc2IDI0LjIwNzUgMjEuMjIwOCAyNC4yMDc1IDIwLjQwNDYgMjMuMzc3NkwxNC45MzA1IDE3LjkwNTlMMS45OTgyNCAyMC44ODc5TDYuMjAxOTFlLTA3IDE4LjkwNDZMMTAuNDU1NiAxMy40NDdMNC45Njc0NiA3Ljk2MTMyTDEuNDkxNjUgOC40Njc2OUw2LjIwMTkxZS0wNyA2Ljk2MjY0TDQuNDc0OTMgNC40ODcwM0w2Ljk2NTcgMEw4LjQ4NTQ5IDEuNDkwOTlMNy45NjQ4MiA1LjAwNzQ3TDEzLjQxMDcgMTAuNDUxTDE4LjkxMjkgMEwyMC44OTcxIDEuOTk3MzZMMTcuOTEzOCAxNC45MjRMMjMuMzg3OSAyMC4zOTU2QzI0LjIwNCAyMS4xODMzIDI0LjIwNCAyMi41ODk5IDIzLjM4NzkgMjMuMzc3NloiIGZpbGw9IiNFNkU2RTYiLz4KPC9zdmc+Cg==";
+const land =
+  "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIzLjM4NzkgMjMuMzc3NkMyMi41NTc2IDI0LjIwNzUgMjEuMjIwOCAyNC4yMDc1IDIwLjQwNDYgMjMuMzc3NkwxNC45MzA1IDE3LjkwNTlMMS45OTgyNCAyMC44ODc5TDYuMjAxOTFlLTA3IDE4LjkwNDZMMTAuNDU1NiAxMy40NDdMNC45Njc0NiA3Ljk2MTMyTDEuNDkxNjUgOC40Njc2OUw2LjIwMTkxZS0wNyA2Ljk2MjY0TDQuNDc0OTMgNC40ODcwM0w2Ljk2NTcgMEw4LjQ4NTQ5IDEuNDkwOTlMNy45NjQ4MiA1LjAwNzQ3TDEzLjQxMDcgMTAuNDUxTDE4LjkxMjkgMEwyMC44OTcxIDEuOTk3MzZMMTcuOTEzOCAxNC45MjRMMjMuMzg3OSAyMC4zOTU2QzI0LjIwNCAyMS4xODMzIDI0LjIwNCAyMi41ODk5IDIzLjM4NzkgMjMuMzc3NloiIGZpbGw9IiNFNkU2RTYiLz4KPC9zdmc+Cg==";
 
 type CameraKey = "front" | "back" | "left" | "right" | "down";
 
@@ -40,6 +42,7 @@ export function Camera3DPanel({ context, rosUrl }: Camera3DPanelProps) {
   // Drone control states
   const [isArmed, setIsArmed] = useState(false);
   const [isFlying, setIsFlying] = useState(false);
+  const [fullscreen, setFullscreen] = useState<"camera" | "map" | null>(null);
 
   // ROS connection
   useEffect(() => {
@@ -48,15 +51,15 @@ export function Camera3DPanel({ context, rosUrl }: Camera3DPanelProps) {
 
     const rosConn = new ROSLIB.Ros({ url: rosUrl });
     rosConn.on("connection", () => {
-      console.log("✅ Connected to ROS at", rosUrl);
+      console.log("Connected to ROS at", rosUrl);
       setConnected(true);
     });
     rosConn.on("error", (err) => {
-      console.error("❌ ROS connection error:", err);
+      console.error("ROS connection error:", err);
       setConnected(false);
     });
     rosConn.on("close", () => {
-      console.warn("⚠️ ROS connection closed");
+      console.warn("ROS connection closed");
       setConnected(false);
     });
 
@@ -167,7 +170,7 @@ export function Camera3DPanel({ context, rosUrl }: Camera3DPanelProps) {
     takeoffService.callService(req, (res) => {
       if (res.success) {
         setIsFlying(true);
-        alert("🚀 Drone Taking Off...");
+        alert("Drone Taking Off...");
       } else {
         alert("Takeoff Failed");
       }
@@ -190,7 +193,7 @@ export function Camera3DPanel({ context, rosUrl }: Camera3DPanelProps) {
     landService.callService(req, (res) => {
       if (res.success) {
         setIsFlying(false);
-        alert("🛬 Drone Landing...");
+        alert("Drone Landing...");
       } else {
         alert("Landing Failed");
       }
@@ -218,9 +221,10 @@ export function Camera3DPanel({ context, rosUrl }: Camera3DPanelProps) {
         backgroundColor: "#101010",
         color: "#fff",
         fontFamily: "sans-serif",
+        position: "relative",
       }}
     >
-      {/* Left Section: Thumbnails + Main Feed */}
+      {/* Left Section: Camera View + Telemetry + Buttons */}
       <div
         style={{
           flex: 1,
@@ -228,61 +232,42 @@ export function Camera3DPanel({ context, rosUrl }: Camera3DPanelProps) {
           flexDirection: "column",
           borderRight: "2px solid #333",
           padding: "0.5rem",
+          position: "relative",
         }}
       >
-        {/* Thumbnails */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(5, 1fr)",
-            gap: "0.6rem",
-            marginBottom: "0.8rem",
-          }}
-        >
-          {cameraNames.map((name) => (
-            <div
-              key={name}
-              onClick={() => setSelectedCamera(name)}
+        {/* --- Top Bar: Camera Dropdown (Normal View) --- */}
+        {fullscreen !== "camera" && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              marginBottom: "0.5rem",
+            }}
+          >
+            <select
+              value={selectedCamera}
+              onChange={(e) => setSelectedCamera(e.target.value as CameraKey)}
               style={{
-                backgroundColor: selectedCamera === name ? "#333" : "#000",
-                border: selectedCamera === name ? "2px solid #00adee" : "1px solid #222",
-                borderRadius: "8px",
+                backgroundColor: "#222",
+                color: "#fff",
+                border: "1px solid #444",
+                borderRadius: "6px",
+                padding: "0.4rem 0.8rem",
+                fontSize: "0.9rem",
                 cursor: "pointer",
-                overflow: "hidden",
-                aspectRatio: "1/1",
-                position: "relative",
               }}
             >
-              {cameraFeeds[name] ? (
-                <img
-                  src={cameraFeeds[name]!}
-                  alt={`${name} feed`}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    opacity: selectedCamera === name ? 0.8 : 1,
-                  }}
-                />
-              ) : (
-                <span
-                  style={{
-                    color: "#666",
-                    fontSize: "0.8rem",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "100%",
-                  }}
-                >
-                  {name.toUpperCase()}
-                </span>
-              )}
-            </div>
-          ))}
-        </div>
+              {cameraNames.map((name) => (
+                <option key={name} value={name}>
+                  {name.charAt(0).toUpperCase() + name.slice(1)} Camera
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
-        {/* Large Main Camera */}
+        {/* --- Large Main Camera View --- */}
         <div
           style={{
             flex: 1,
@@ -292,18 +277,201 @@ export function Camera3DPanel({ context, rosUrl }: Camera3DPanelProps) {
             alignItems: "center",
             justifyContent: "center",
             overflow: "hidden",
-            position: "relative",
+            position: fullscreen === "camera" ? "fixed" : "relative",
+            top: fullscreen === "camera" ? 0 : undefined,
+            left: fullscreen === "camera" ? 0 : undefined,
+            width: fullscreen === "camera" ? "100vw" : "auto",
+            height: fullscreen === "camera" ? "100vh" : "100%",
+            zIndex: fullscreen === "camera" ? 9999 : "auto",
           }}
         >
           {cameraFeeds[selectedCamera] ? (
             <img
               src={cameraFeeds[selectedCamera]!}
               alt={`${selectedCamera} view`}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
             />
           ) : (
             <span style={{ color: "#888" }}>Waiting for {selectedCamera} feed...</span>
           )}
+
+          {/* --- Dropdown for Fullscreen Mode --- */}
+          {fullscreen === "camera" && (
+            <div
+              style={{
+                position: "absolute",
+                top: "15px",
+                right: "10%",
+                padding: "0.25rem 0.6rem",
+              }}
+            >
+              <select
+                value={selectedCamera}
+                onChange={(e) => setSelectedCamera(e.target.value as CameraKey)}
+                style={{
+                  backgroundColor: "#222",
+                  color: "#fff",
+                  border: "1px solid #444",
+                  borderRadius: "6px",
+                  padding: "0.4rem 0.8rem",
+                  fontSize: "0.9rem",
+                  cursor: "pointer",
+                }}
+              >
+                {cameraNames.map((name) => (
+                  <option key={name} value={name}>
+                    {name.charAt(0).toUpperCase() + name.slice(1)} Camera
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* --- Expand/Compress Button --- */}
+          <button
+            onClick={() => setFullscreen(fullscreen === "camera" ? null : "camera")}
+            style={{
+              position: "absolute",
+              right: "15px",
+              bottom: "15px",
+              backgroundColor: "#222",
+              border: "1px solid #555",
+              borderRadius: "50%",
+              width: "40px",
+              height: "40px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              color: "#fff",
+              transition: "background 0.2s ease",
+            }}
+          >
+            {fullscreen === "camera" ? <FaCompress /> : <FaExpand />}
+          </button>
+        </div>
+
+        {/* --- Telemetry Actions Section --- */}
+        <div
+          style={{
+            marginTop: "1rem",
+            width: "100%",
+            height: "auto",
+            backgroundColor: "#1e1e1e",
+            border: "1px solid #333",
+            borderRadius: "10px",
+            padding: "1rem",
+            display: "flex",
+            flexDirection: "column",
+            gap: "1rem",
+            boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+          }}
+        >
+          <div
+            style={{
+              color: "#fff",
+              fontWeight: 600,
+              fontSize: "1.1rem",
+              letterSpacing: "0.5px",
+              textAlign: "left",
+            }}
+          >
+            Telemetry
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-start",
+              flexWrap: "wrap",
+              gap: "1rem",
+            }}
+          >
+            {/* Battery Status */}
+            <div
+              style={{
+                backgroundColor: "#2b2b2b",
+                borderRadius: "8px",
+                padding: "0.75rem 1.25rem",
+                flex: "1 1 calc(25% - 1rem)",
+                minWidth: "220px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                border: "1px solid #444",
+              }}
+            >
+              <span style={{ color: "#aaa", fontSize: "0.85rem", marginBottom: "0.25rem" }}>
+                Battery Status
+              </span>
+              <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                <span style={{ color: "#f8c756", fontWeight: 600, fontSize: "1rem" }}>Volt:</span>
+                <span style={{ color: "#f0f0f0ff", fontWeight: 500 }}>15.4V</span>
+              </div>
+              <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                <span style={{ color: "#f8c756", fontWeight: 600, fontSize: "1rem" }}>Curr:</span>
+                <span style={{ color: "#f0f0f0ff", fontWeight: 500 }}>3.2A</span>
+              </div>
+            </div>
+
+            {/* Flight Time */}
+            <div
+              style={{
+                backgroundColor: "#2b2b2b",
+                borderRadius: "8px",
+                padding: "0.75rem 1.25rem",
+                flex: "1 1 calc(25% - 1rem)",
+                minWidth: "220px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                border: "1px solid #444",
+              }}
+            >
+              <span style={{ color: "#aaa", fontSize: "0.85rem" }}>Flight Time</span>
+              <span style={{ color: "#f8c756", fontWeight: 600, fontSize: "1.1rem" }}>00:00</span>
+            </div>
+
+            {/* Distance Travelled */}
+            <div
+              style={{
+                backgroundColor: "#2b2b2b",
+                borderRadius: "8px",
+                padding: "0.75rem 1.25rem",
+                flex: "1 1 calc(25% - 1rem)",
+                minWidth: "220px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                border: "1px solid #444",
+              }}
+            >
+              <span style={{ color: "#aaa", fontSize: "0.85rem" }}>Distance Travelled</span>
+              <span style={{ color: "#f8c756", fontWeight: 600, fontSize: "1.1rem" }}>0.0 m</span>
+            </div>
+
+            {/* RSI Signal Strength */}
+            <div
+              style={{
+                backgroundColor: "#2b2b2b",
+                borderRadius: "8px",
+                padding: "0.75rem 1.25rem",
+                flex: "1 1 calc(25% - 1rem)",
+                minWidth: "220px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                border: "1px solid #444",
+              }}
+            >
+              <span style={{ color: "#aaa", fontSize: "0.85rem" }}>RSI Signal Strength</span>
+              <span style={{ color: "#f8c756", fontWeight: 600, fontSize: "1.1rem" }}>85%</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -328,10 +496,36 @@ export function Camera3DPanel({ context, rosUrl }: Camera3DPanelProps) {
             justifyContent: "center",
             backgroundColor: "#111",
             borderRadius: "8px",
-            position: "relative",
+            position: fullscreen === "map" ? "fixed" : "relative",
+            top: fullscreen === "map" ? 0 : undefined,
+            left: fullscreen === "map" ? 0 : undefined,
+            width: fullscreen === "map" ? "100vw" : "auto",
+            height: fullscreen === "map" ? "100vh" : "100%",
+            zIndex: fullscreen === "map" ? 9999 : "auto",
           }}
         >
           <span style={{ color: "#aaa", fontSize: "1rem" }}>3D Map View</span>
+          <button
+            onClick={() => setFullscreen(fullscreen === "map" ? null : "map")}
+            style={{
+              position: "absolute",
+              right: "15px",
+              bottom: "15px",
+              backgroundColor: "#222",
+              border: "1px solid #555",
+              borderRadius: "50%",
+              width: "40px",
+              height: "40px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              color: "#fff",
+              transition: "background 0.2s ease",
+            }}
+          >
+            {fullscreen === "map" ? <FaCompress /> : <FaExpand />}
+          </button>
 
           {/* Left Center: Arm / Disarm Buttons */}
           <div
